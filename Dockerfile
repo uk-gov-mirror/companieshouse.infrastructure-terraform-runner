@@ -2,7 +2,7 @@ FROM amazonlinux:2
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-ARG PLATFORM_TOOLS_VERSION="1.0.17"
+ARG PLATFORM_TOOLS_VERSION="1.0.18"
 ARG TF_VERSIONS="0.12 0.13 1.3"
 ARG TF_ROOT_PATH="/terraform"
 ARG TF_BIN_PATH="/usr/bin"
