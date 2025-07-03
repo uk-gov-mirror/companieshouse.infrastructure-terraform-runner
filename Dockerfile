@@ -38,8 +38,7 @@ RUN curl -sL "https://github.com/jqlang/jq/releases/download/jq-${JQ_VERSION}/jq
 RUN curl https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o awscliv2.zip && \
     unzip -q awscliv2.zip && \
     /tmp/aws/install --bin-dir /usr/bin && \
-    rm -rf aws && \
-    rm -f awscliv2.zip
+    rm -rf aws/ awscliv2.zip
 
 RUN rpm --import http://yum-repository.platform.aws.chdev.org/RPM-GPG-KEY-platform-noarch && \
     yum install -y yum-utils && \
