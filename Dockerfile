@@ -2,6 +2,7 @@ FROM amazonlinux:2
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
+ARG JQ_VERSION="1.8.1"
 ARG PLATFORM_TOOLS_VERSION="1.0.18"
 ARG TF_VERSIONS="0.12 0.13 1.3"
 ARG TF_ROOT_PATH="/terraform"
@@ -13,7 +14,6 @@ ENV TF_BIN_PATH=${TF_BIN_PATH}
 
 RUN yum install -y \
     git \
-    jq \
     openssl \
     rsync \
     sha256sum \
@@ -26,17 +26,27 @@ RUN yum install -y \
 RUN curl http://192.168.60.37/websenseproxy_A.cer --output - 2>/dev/null | openssl x509 -inform der -outform pem -out /etc/pki/ca-trust/source/anchors/websenseproxy.internal.ch.pem && \
     update-ca-trust
 
-RUN curl https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o /tmp/awscliv2.zip && \
-    unzip -q /tmp/awscliv2.zip -d /tmp && \
+WORKDIR /tmp
+
+RUN curl -sL "https://github.com/jqlang/jq/releases/download/jq-${JQ_VERSION}/jq-linux-amd64" -o jq-linux-amd64 && \
+    curl -sL "https://github.com/jqlang/jq/releases/download/jq-${JQ_VERSION}/sha256sum.txt" -o sha256sum.txt && \
+    grep jq-linux-amd64 sha256sum.txt | sha256sum --check --status && \
+    chmod +x jq-linux-amd64 && \
+    mv jq-linux-amd64 /usr/bin/jq && \
+    rm sha256sum.txt
+
+RUN curl https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o awscliv2.zip && \
+    unzip -q awscliv2.zip && \
     /tmp/aws/install --bin-dir /usr/bin && \
-    rm -rf /tmp/aws && \
-    rm -f /tmp/awscliv2.zip
+    rm -rf aws/ awscliv2.zip
 
 RUN rpm --import http://yum-repository.platform.aws.chdev.org/RPM-GPG-KEY-platform-noarch && \
     yum install -y yum-utils && \
     yum-config-manager --add-repo http://yum-repository.platform.aws.chdev.org/platform-noarch.repo && \
     yum install -y platform-tools-terraform-$PLATFORM_TOOLS_VERSION && \
     yum clean all
+
+WORKDIR /
 
 COPY /resources/tf_install.sh /tf_install.sh
 COPY /resources/entrypoint.sh /entrypoint.sh
