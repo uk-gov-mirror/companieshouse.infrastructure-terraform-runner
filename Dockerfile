@@ -4,6 +4,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 ARG JQ_VERSION="1.8.1"
 ARG PLATFORM_TOOLS_VERSION="1.0.18"
+ARG TARGETARCH
 ARG TF_VERSIONS="0.12 0.13 1.3"
 ARG TF_ROOT_PATH="/terraform"
 ARG TF_BIN_PATH="/usr/bin"
@@ -28,14 +29,14 @@ RUN curl http://192.168.60.37/websenseproxy_A.cer --output - 2>/dev/null | opens
 
 WORKDIR /tmp
 
-RUN curl -sL "https://github.com/jqlang/jq/releases/download/jq-${JQ_VERSION}/jq-linux-amd64" -o jq-linux-amd64 && \
+RUN curl -sL "https://github.com/jqlang/jq/releases/download/jq-${JQ_VERSION}/jq-linux-${TARGETARCH}" -o "jq-linux-${TARGETARCH}" && \
     curl -sL "https://github.com/jqlang/jq/releases/download/jq-${JQ_VERSION}/sha256sum.txt" -o sha256sum.txt && \
-    grep jq-linux-amd64 sha256sum.txt | sha256sum --check --status && \
-    chmod +x jq-linux-amd64 && \
-    mv jq-linux-amd64 /usr/bin/jq && \
+    grep "jq-linux-${TARGETARCH}" sha256sum.txt | sha256sum --check --status && \
+    chmod +x "jq-linux-${TARGETARCH}" && \
+    mv "jq-linux-${TARGETARCH}" "/usr/bin/jq" && \
     rm sha256sum.txt
 
-RUN curl https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o awscliv2.zip && \
+RUN curl -s "https://awscli.amazonaws.com/awscli-exe-linux-$(arch).zip" -o "awscliv2.zip" && \
     unzip -q awscliv2.zip && \
     /tmp/aws/install --bin-dir /usr/bin && \
     rm -rf aws/ awscliv2.zip

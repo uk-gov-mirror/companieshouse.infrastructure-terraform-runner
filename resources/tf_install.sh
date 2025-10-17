@@ -17,7 +17,7 @@ for VERSION in $VERSIONS; do
     if [[ $TF_LATEST_RELEASE_HTML =~ $TF_RELEASE_REGEX ]]; then
         TF_RELEASE=${BASH_REMATCH[1]}
         echo "Found release: ${TF_RELEASE}"
-        TF_ARCHIVE_FILE="terraform_${TF_RELEASE}_linux_amd64.zip"
+        TF_ARCHIVE_FILE="terraform_${TF_RELEASE}_linux_${TARGETARCH}.zip"
         TF_SHASUMS_FILE="terraform_${TF_RELEASE}_SHA256SUMS"
     else
         echo "Unable to determine release for version $VERSION"
