@@ -24,8 +24,8 @@ RUN yum install -y \
     zip && \
     yum clean all
 
-RUN curl http://192.168.60.37/websenseproxy_A.cer --output - 2>/dev/null | openssl x509 -inform der -outform pem -out /etc/pki/ca-trust/source/anchors/websenseproxy.internal.ch.pem && \
-    update-ca-trust
+RUN curl http://192.168.60.37/websenseproxy_2025.cer --output - 2>/dev/null | openssl x509 -inform pem -outform pem -out /etc/pki/ca-trust/source/anchors/websenseproxy.internal.ch.pem && \
+update-ca-trust extract
 
 WORKDIR /tmp
 
