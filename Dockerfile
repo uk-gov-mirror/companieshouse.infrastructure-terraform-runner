@@ -2,10 +2,11 @@ FROM amazonlinux:2
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
+ARG IBOSS_ENDPOINT
 ARG JQ_VERSION="1.8.1"
 ARG PLATFORM_TOOLS_VERSION="1.0.18"
 ARG TARGETARCH
-ARG TF_VERSIONS="0.12 0.13 1.3"
+ARG TF_VERSIONS="0.12 0.13 1.3 1.9 1.14"
 ARG TF_ROOT_PATH="/terraform"
 ARG TF_BIN_PATH="/usr/bin"
 ARG TF_USER="tfrunner"
@@ -13,18 +14,20 @@ ARG TF_USER="tfrunner"
 ENV TF_ROOT_PATH=${TF_ROOT_PATH}
 ENV TF_BIN_PATH=${TF_BIN_PATH}
 
-RUN yum install -y \
-    git \
-    openssl \
-    rsync \
-    sha256sum \
-    sudo \
-    unzip \
-    wget \
-    zip && \
+RUN yum update -y && \
+    yum install -y \
+        git-2.47.3 \
+        openssl-1.0.2k \
+        rsync-3.1.2 \
+        sudo-1.8.23 \
+        unzip-6.0 \
+        wget-1.14 \
+        yum-utils-1.1.31 \
+        zip-3.0 && \
     yum clean all
 
-RUN curl http://192.168.60.37/websenseproxy_2025.cer --output - 2>/dev/null | openssl x509 -inform pem -outform pem -out /etc/pki/ca-trust/source/anchors/websenseproxy.internal.ch.pem && \
+RUN curl "http://192.168.60.37/websenseproxy_2025.cer" --output - 2>/dev/null | openssl x509 -inform pem -outform pem -out /etc/pki/ca-trust/source/anchors/websenseproxy.internal.ch.pem && \
+    curl -sL "${IBOSS_ENDPOINT}" > /etc/pki/ca-trust/source/anchors/iboss.pem && \
     update-ca-trust
 
 WORKDIR /tmp
@@ -42,9 +45,9 @@ RUN curl -s "https://awscli.amazonaws.com/awscli-exe-linux-$(arch).zip" -o "awsc
     rm -rf aws/ awscliv2.zip
 
 RUN rpm --import http://yum-repository.platform.aws.chdev.org/RPM-GPG-KEY-platform-noarch && \
-    yum install -y yum-utils && \
     yum-config-manager --add-repo http://yum-repository.platform.aws.chdev.org/platform-noarch.repo && \
-    yum install -y platform-tools-terraform-$PLATFORM_TOOLS_VERSION && \
+    yum install -y \
+        platform-tools-terraform-${PLATFORM_TOOLS_VERSION} && \
     yum clean all
 
 WORKDIR /
@@ -58,8 +61,7 @@ RUN useradd --uid 1000 --create-home --shell /bin/bash ${TF_USER} && \
     /tf_install.sh "${TF_VERSIONS}" "${TF_ROOT_PATH}"
 
 RUN yum -y erase \
-    sha256sum \
-    wget && \
+        wget && \
     yum clean all && \
     rm -f /tf_install.sh
 
