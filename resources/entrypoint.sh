@@ -24,3 +24,8 @@ else
     unzip -q ${TF_ARCHIVE} -d ${TF_BIN_PATH}/
 fi
 /usr/bin/run-terraform "$@"
+
+if [[ -n "${USER_UID}" ]] && [[ -n "${USER_GID}" ]]; then
+    log-output info "Syncing pending changes back to user"
+    sudo rsync -qa --chown=${USER_UID}:${USER_GID} --exclude '.git/' --exclude '.terraform/'  ./ /src
+fi
