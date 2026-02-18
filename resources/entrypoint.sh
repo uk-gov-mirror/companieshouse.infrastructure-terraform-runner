@@ -14,7 +14,7 @@ fi
 
 rsync_ignore_lock_opts=""
 if [[ -n "${TF_RUNNER_IGNORE_DEPENDENCY_LOCK_FILE}" ]] && [[ "${TF_RUNNER_IGNORE_DEPENDENCY_LOCK_FILE}" != "false" ]]; then
-    log-output info "Ignoring dependency lock file"
+    log-output debug "Excluding dependency lock file from rsync"
     rsync_ignore_lock_opts="--exclude '.terraform.lock.hcl'"
 fi
 
