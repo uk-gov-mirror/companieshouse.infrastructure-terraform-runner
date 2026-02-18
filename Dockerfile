@@ -66,5 +66,6 @@ RUN yum -y erase \
     rm -f /tf_install.sh
 
 WORKDIR /terraform-code
+USER tfrunner
 
 ENTRYPOINT ["/entrypoint.sh"]
