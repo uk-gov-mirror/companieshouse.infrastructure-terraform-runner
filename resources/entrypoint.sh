@@ -44,7 +44,8 @@ log-output debug "Passing operation to run-terraform"
 
 if [[ -z $TF_RUNNER_IGNORE_DEPENDENCY_LOCK_FILE ]] || [[ "${TF_RUNNER_IGNORE_DEPENDENCY_LOCK_FILE}" == "false" ]]; then
     if [[ -n "${USER_UID}" ]] && [[ -n "${USER_GID}" ]]; then
+        rsync_sync_back_command="sudo rsync -qa --chown=${USER_UID}:${USER_GID} --exclude '.git/' --exclude '.terraform/'  ./ /src"
         log-output info "Syncing pending changes back to user"
-        sudo rsync -qa --chown=${USER_UID}:${USER_GID} --exclude '.git/' --exclude '.terraform/'  ./ /src
+        eval "${rsync_sync_back_command}"
     fi
 fi
