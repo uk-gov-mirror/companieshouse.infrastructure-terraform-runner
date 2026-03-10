@@ -28,7 +28,7 @@ rsync_aws_command="sudo rsync -qa /root/.aws /home/tfrunner/"
 log-output debug "Running rsync command: ${rsync_aws_command}"
 eval "${rsync_aws_command}"
 
-rsync_ssh_command="sudo rsync -qa /root/.ssh /home/tfrunner/"
+rsync_ssh_command="sudo rsync -qa /root/.ssh /home/tfrunner/ --exclude '/*/agent'"
 log-output debug "Running rsync command: ${rsync_ssh_command}"
 eval "${rsync_ssh_command}"
 
