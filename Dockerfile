@@ -2,7 +2,6 @@ FROM amazonlinux:2
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-ARG IBOSS_ENDPOINT
 ARG JQ_VERSION="1.8.1"
 ARG PLATFORM_TOOLS_VERSION="1.0.18"
 ARG TARGETARCH
@@ -25,10 +24,6 @@ RUN yum update -y && \
         yum-utils-1.1.31 \
         zip-3.0 && \
     yum clean all
-
-RUN curl "http://192.168.60.37/websenseproxy_2025.cer" --output - 2>/dev/null | openssl x509 -inform pem -outform pem -out /etc/pki/ca-trust/source/anchors/websenseproxy.internal.ch.pem && \
-    curl -sL "${IBOSS_ENDPOINT}" > /etc/pki/ca-trust/source/anchors/iboss.pem && \
-    update-ca-trust
 
 WORKDIR /tmp
 
