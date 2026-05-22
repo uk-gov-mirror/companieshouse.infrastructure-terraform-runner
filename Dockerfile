@@ -3,7 +3,7 @@ FROM amazonlinux:2
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 ARG JQ_VERSION="1.8.1"
-ARG PLATFORM_TOOLS_VERSION="1.1.2"
+ARG PLATFORM_TOOLS_VERSION="1.1.3"
 ARG TARGETARCH
 ARG TF_VERSIONS="0.12 0.13 1.3 1.9 1.14"
 ARG TF_ROOT_PATH="/terraform"
